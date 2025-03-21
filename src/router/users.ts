@@ -7,6 +7,7 @@ import {
   getUserTotalCountMonth,
   getAllMonthRecentUsers,
   getAllRecentDataUsers,
+  getByMonthOfInterval,
 } from "../controllers/users";
 // import { isAuthenticated, isOwner } from "../middleware";
 
@@ -18,4 +19,5 @@ export default (router: express.Router) => {
   router.get("/user-count-month", getUserTotalCountMonth);
   router.get("/user-recent-month", getAllMonthRecentUsers);
   router.get("/user-recent-data", getAllRecentDataUsers);
+  router.get("/user-month-interval", getByMonthOfInterval);
 };

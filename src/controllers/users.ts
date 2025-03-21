@@ -15,6 +15,7 @@ import {
   formatDistanceToNow,
   startOfMonth,
 } from "date-fns";
+import { UserModel } from "../models/users";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -107,6 +108,40 @@ export const getAllRecentDataUsers = async (
     return res.sendStatus(400);
   }
 };
+
+export const getByMonthOfInterval = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const currentDate = new Date();
+
+    const countRecentDataUsers = await getRecentDataUsers({
+      by: ["createdAt"],
+      _count: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    const monthlyUsersData = eachMonthOfInterval({
+      start: startOfMonth(new Date(countRecentDataUsers[0]?.createdAt || new Date())),
+      end: endOfMonth(currentDate)
+    }).map(month => {
+      const monthString = format(month, 'MMM');
+      const userMonthly = countRecentDataUsers.filter((user: any) => format(new Date(user.createdAt), 'MMM') === monthString).reduce((total: any, user: any) => total + user._count.createdAt, 0);
+      return { month: monthString, total: userMonthly}
+      
+    })
+
+    return res.status(200).json(monthlyUsersData);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+}
 
 export const deleteUser = async (
   req: express.Request,

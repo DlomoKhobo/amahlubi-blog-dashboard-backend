@@ -1,4 +1,11 @@
 import { UserModel } from "../models/users";
+import {
+  eachMonthOfInterval,
+  endOfMonth,
+  format,
+  formatDistanceToNow,
+  startOfMonth,
+} from "date-fns";
 
 export const getUsers = () => UserModel.find();
 export const getUserByEmail = (email: string) => UserModel.findOne({ email });
@@ -15,3 +22,4 @@ export const getTotalUsers = () => UserModel.countDocuments();
 export const getUserCountMonth = (createdAt: Record<string, any>) => UserModel.countDocuments(createdAt);
 export const getRecentMonthUsers = (createdAt: Record<string, any>) => UserModel.find(createdAt);
 export const getRecentDataUsers = (createdAt: Record<string, any>) => UserModel.find(createdAt);
+
