@@ -7,6 +7,7 @@ import {
   getUserCountMonth,
   getRecentMonthUsers,
   getRecentDataUsers,
+  sortUsersByCreatedAt,
 } from "../db/users";
 import {
   eachMonthOfInterval,
@@ -15,7 +16,6 @@ import {
   formatDistanceToNow,
   startOfMonth,
 } from "date-fns";
-import { UserModel } from "../models/users";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -50,17 +50,7 @@ export const getUserTotalCountMonth = async (
   res: express.Response
 ) => {
   try {
-    const currentDate = new Date();
-
-    const countUsersMonth = await getUserCountMonth({
-      where: {
-        createdAt: {
-          gte: startOfMonth(currentDate),
-          lte: endOfMonth(currentDate),
-        },
-      },
-    });
-
+    const countUsersMonth = await getUserCountMonth();
     return res.status(200).json(countUsersMonth);
   } catch (error) {
     console.log(error);
@@ -73,13 +63,7 @@ export const getAllMonthRecentUsers = async (
   res: express.Response
 ) => {
   try {
-    const countRecentUsersMonth = await getRecentMonthUsers({
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 7,
-    });
-
+    const countRecentUsersMonth = await getRecentMonthUsers();
     return res.status(200).json(countRecentUsersMonth);
   } catch (error) {
     console.log(error);
@@ -87,6 +71,7 @@ export const getAllMonthRecentUsers = async (
   }
 };
 
+// Total users posted or commented this month
 export const getAllRecentDataUsers = async (
   req: express.Request,
   res: express.Response
@@ -114,34 +99,30 @@ export const getByMonthOfInterval = async (
   res: express.Response
 ) => {
   try {
-    const currentDate = new Date();
 
-    const countRecentDataUsers = await getRecentDataUsers({
-      by: ["createdAt"],
-      _count: {
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
+    let currentMonth = new Date();
+    currentMonth.setMonth(currentMonth.getMonth());
+    const monthString = format(currentMonth, "MMM");
+
+    const countRecentDataUsers = await sortUsersByCreatedAt();
 
     const monthlyUsersData = eachMonthOfInterval({
-      start: startOfMonth(new Date(countRecentDataUsers[0]?.createdAt || new Date())),
-      end: endOfMonth(currentDate)
-    }).map(month => {
-      const monthString = format(month, 'MMM');
-      const userMonthly = countRecentDataUsers.filter((user: any) => format(new Date(user.createdAt), 'MMM') === monthString).reduce((total: any, user: any) => total + user._count.createdAt, 0);
-      return { month: monthString, total: userMonthly}
-      
-    })
+      start: startOfMonth(
+        new Date(new Date())
+      ),
+      end: endOfMonth(currentMonth),
+    }).map((month) => {
+      const monthString = format(month, "MMM");
+      const userMonthly = countRecentDataUsers;
+      return { month: monthString, total: userMonthly };
+    });
 
     return res.status(200).json(monthlyUsersData);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
   }
-}
+};
 
 export const deleteUser = async (
   req: express.Request,

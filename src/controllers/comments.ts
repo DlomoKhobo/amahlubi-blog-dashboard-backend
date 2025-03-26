@@ -49,16 +49,7 @@ export const getCommentTotalCountMonth = async (
   res: express.Response
 ) => {
   try {
-    const currentDate = new Date();
-
-    const countCommentsMonth = await getCommentCountMonth({
-      where: {
-        createdAt: {
-          gte: startOfMonth(currentDate),
-          lte: endOfMonth(currentDate),
-        },
-      },
-    });
+    const countCommentsMonth = await getCommentCountMonth();
 
     return res.status(200).json(countCommentsMonth);
   } catch (error) {
@@ -72,12 +63,12 @@ export const getAllMonthRecentComments = async (
   res: express.Response
 ) => {
   try {
-    const countRecentCommentsMonth = await getRecentMonthComments({
+    const countRecentCommentsMonth = await getRecentMonthComments(/* {
       orderBy: {
         createdAt: "desc",
       },
       take: 7,
-    });
+    } */);
 
     return res.status(200).json(countRecentCommentsMonth);
   } catch (error) {

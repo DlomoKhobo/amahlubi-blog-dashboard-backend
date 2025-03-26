@@ -19,7 +19,21 @@ export const deleteUserById = (id: string) => UserModel.findOneAndDelete({ _id: 
 export const updateUserById = (id: string, values: Record<string, any>) => UserModel.findByIdAndUpdate( id, values);
 
 export const getTotalUsers = () => UserModel.countDocuments();
-export const getUserCountMonth = (createdAt: Record<string, any>) => UserModel.countDocuments(createdAt);
-export const getRecentMonthUsers = (createdAt: Record<string, any>) => UserModel.find(createdAt);
+
+let oneMonth = new Date();
+oneMonth.setMonth(oneMonth.getMonth() - 1);
+
+export const getUserCountMonth = () => UserModel.countDocuments({ createdAt: { $gt: oneMonth }});
+// Users registered this month in an asc order: limit of 7
+/* export const getRecentMonthUsers = () => UserModel.countDocuments({ createdAt: { $gt: oneMonth}} ).sort({ createdAt:'asc' });
+export const getRecentMonthUsers2 = () => UserModel.find({ createdAt: { $gt: oneMonth}} ).sort({ createdAt:'asc' }); */
+export const getRecentMonthUsers = () => UserModel.aggregate([{$limit: 7}, { $match: { createdAt: { $gt: oneMonth} } }]).sort({ createdAt:'asc' });
+
+/* TODO */
+// Users made a comment this month
 export const getRecentDataUsers = (createdAt: Record<string, any>) => UserModel.find(createdAt);
 
+/* export const sortUsersByCreatedAt = () => UserModel.find({}).sort({ createdAt:'asc' }).countDocuments();
+export const sortUsersByCreatedAt2 = () => UserModel.aggregate([{ $count: 'createdAt' }]).sort({ createdAt:'asc' }); */
+//export const sortUsersByCreatedAt = () => UserModel.aggregate([{ $count: 'createdAt' }, { $group: { _id: '$createdAt'}}]).sort({ createdAt:'asc' });
+export const sortUsersByCreatedAt = () => UserModel.countDocuments({ createdAt: { $gt: oneMonth }});

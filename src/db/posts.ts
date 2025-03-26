@@ -11,6 +11,16 @@ export const deletePostById = (id: string) => PostModel.findOneAndDelete({ _id: 
 export const updatePostById = (id: string, values: Record<string, any>) => PostModel.findByIdAndUpdate( id, values);
 
 export const getTotalPosts = () => PostModel.countDocuments();
-export const getPostCountMonth = (createdAt: Record<string, any>) => PostModel.countDocuments(createdAt);
-export const getRecentMonthPosts = (createdAt: Record<string, any>) => PostModel.find(createdAt);
+
+
+
+let oneMonth = new Date();
+oneMonth.setMonth(oneMonth.getMonth() - 1);
+
+export const getPostCountMonth = () => PostModel.countDocuments({ createdAt: { $gt: oneMonth}});
+//export const getRecentMonthPosts = (createdAt: Record<string, any>) => PostModel.find(createdAt);
+export const getRecentMonthPosts = () => PostModel.aggregate([{$limit: 7}, { $match: { createdAt: { $gt: oneMonth} } }] ).sort({ createdAt:'asc' });
+
+
+
 export const getRecentDataPosts = (createdAt: Record<string, any>) => PostModel.find(createdAt);

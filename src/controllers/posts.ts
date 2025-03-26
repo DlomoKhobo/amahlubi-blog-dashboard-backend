@@ -49,16 +49,7 @@ export const getPostTotalCountMonth = async (
   res: express.Response
 ) => {
   try {
-    const currentDate = new Date();
-
-    const countPostsMonth = await getPostCountMonth({
-      where: {
-        createdAt: {
-          gte: startOfMonth(currentDate),
-          lte: endOfMonth(currentDate),
-        },
-      },
-    });
+    const countPostsMonth = await getPostCountMonth();
 
     return res.status(200).json(countPostsMonth);
   } catch (error) {
@@ -72,12 +63,7 @@ export const getAllMonthRecentPosts = async (
   res: express.Response
 ) => {
   try {
-    const countRecentPostsMonth = await getRecentMonthPosts({
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 7,
-    });
+    const countRecentPostsMonth = await getRecentMonthPosts();
 
     return res.status(200).json(countRecentPostsMonth);
   } catch (error) {

@@ -11,6 +11,17 @@ export const deleteCommentById = (id: string) => CommentModel.findOneAndDelete({
 export const updateCommentById = (id: string, values: Record<string, any>) => CommentModel.findByIdAndUpdate( id, values);
 
 export const getTotalComments = () => CommentModel.countDocuments();
-export const getCommentCountMonth = (createdAt: Record<string, any>) => CommentModel.countDocuments(createdAt);
-export const getRecentMonthComments = (createdAt: Record<string, any>) => CommentModel.find(createdAt);
+
+
+
+let oneMonth = new Date();
+oneMonth.setMonth(oneMonth.getMonth() - 1);
+
+export const getCommentCountMonth = () => CommentModel.countDocuments({ createdAt: { $gt: oneMonth}});
+//export const getRecentMonthComments = (createdAt: Record<string, any>) => CommentModel.find(createdAt);
+export const getRecentMonthComments = () => CommentModel.aggregate([{$limit: 7}, { $match: { createdAt: { $gt: oneMonth} } }] ).sort({ createdAt:'asc' });
+
+
+
+
 export const getRecentDataComments = (createdAt: Record<string, any>) => CommentModel.find(createdAt);
