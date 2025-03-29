@@ -36,4 +36,4 @@ export const getRecentDataUsers = (createdAt: Record<string, any>) => UserModel.
 /* export const sortUsersByCreatedAt = () => UserModel.find({}).sort({ createdAt:'asc' }).countDocuments();
 export const sortUsersByCreatedAt2 = () => UserModel.aggregate([{ $count: 'createdAt' }]).sort({ createdAt:'asc' }); */
 //export const sortUsersByCreatedAt = () => UserModel.aggregate([{ $count: 'createdAt' }, { $group: { _id: '$createdAt'}}]).sort({ createdAt:'asc' });
-export const sortUsersByCreatedAt = () => UserModel.countDocuments({ createdAt: { $gt: oneMonth }});
+export const sortUsersByCreatedAt = () => UserModel.countDocuments({ createdAt: { $gt: oneMonth }}, { $count: 'createdAt' });

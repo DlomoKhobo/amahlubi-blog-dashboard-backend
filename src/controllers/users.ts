@@ -102,7 +102,6 @@ export const getByMonthOfInterval = async (
 
     let currentMonth = new Date();
     currentMonth.setMonth(currentMonth.getMonth());
-    const monthString = format(currentMonth, "MMM");
 
     const countRecentDataUsers = await sortUsersByCreatedAt();
 
