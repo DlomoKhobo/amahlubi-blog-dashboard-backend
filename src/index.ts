@@ -7,6 +7,8 @@ import cors from "cors";
 import router from "./router";
 import { connectDB } from "./lib/connectDB";
 import 'dotenv/config';
+import webHookRouter from './router/webhook'
+import { clerkMiddleware } from '@clerk/express'
 
 
 const app = express();
@@ -16,8 +18,8 @@ const options = {
 };
 
 app.use(cors(options));
-
-//app.use(cors(process.env.CLIENT_URL))
+app.use(clerkMiddleware());
+app.use('/webhooks', webHookRouter);
 
 app.use(compression());
 app.use(cookieParser());

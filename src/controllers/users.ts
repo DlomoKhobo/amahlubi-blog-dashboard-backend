@@ -8,6 +8,7 @@ import {
   getRecentMonthUsers,
   getRecentDataUsers,
   sortUsersByCreatedAt,
+  sortUsersByCreatedAt3,
 } from "../db/users";
 import {
   eachMonthOfInterval,
@@ -16,6 +17,7 @@ import {
   formatDistanceToNow,
   startOfMonth,
 } from "date-fns";
+import moment from "moment";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -99,16 +101,13 @@ export const getByMonthOfInterval = async (
   res: express.Response
 ) => {
   try {
-
     let currentMonth = new Date();
     currentMonth.setMonth(currentMonth.getMonth());
 
     const countRecentDataUsers = await sortUsersByCreatedAt();
 
     const monthlyUsersData = eachMonthOfInterval({
-      start: startOfMonth(
-        new Date(new Date())
-      ),
+      start: startOfMonth(new Date(new Date())),
       end: endOfMonth(currentMonth),
     }).map((month) => {
       const monthString = format(month, "MMM");
@@ -117,6 +116,34 @@ export const getByMonthOfInterval = async (
     });
 
     return res.status(200).json(monthlyUsersData);
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
+
+export const getByMonthOfInterval2 = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const months = 12;
+    const today = new Date();
+    const tempData = [];
+
+    for (let i = 0; i < months; i++) {
+      const date = new Date(
+        today.getFullYear(),
+        today.getMonth() - (months - (i + 1))
+      );
+      tempData.push({
+        date,
+        name: moment(date).format("MMM"),
+        users: 0,
+      });
+    }
+
+    return res.status(200).json(tempData);
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
